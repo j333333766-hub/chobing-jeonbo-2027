@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>초빙·우선전보 현황</title>
-<meta name="description" content="2027. 3. 1.자 초빙·우선전보·공개모집 공문을 교과별·마감일별로 모아 보는 안내 페이지 (구월중학교 접수 공문 기준)">
+<meta name="description" content="2027. 3. 1.자 초빙·우선전보·공개모집·인사교류 공문과 표창 추천 공문을 마감일별로 모아 보는 안내 페이지 (구월중학교 접수 공문 기준)">
 <meta property="og:title" content="2027. 3. 1.자 초빙·우선전보 현황">
 <meta property="og:description" content="구월중학교 접수 공문 기준 · 교과별 모집 현황과 마감일을 한눈에">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -15,7 +15,7 @@
   --accent:#2357d6; --accent-soft:#e7eefc;
   --t-chobing:#7a3fd1; --t-chobing-soft:#f1eafc;
   --t-ujeon:#0f7a63; --t-ujeon-soft:#e2f4ef;
-  --t-gongmo:#b4570b; --t-gongmo-soft:#fdf0e3; --t-gyoryu:#2f6f4f; --t-gyoryu-soft:#e4f2ea;
+  --t-gongmo:#b4570b; --t-gongmo-soft:#fdf0e3; --t-gyoryu:#2f6f4f; --t-gyoryu-soft:#e4f2ea; --t-award:#8a3fa0; --t-award-soft:#f4e8f8;
   --urgent:#d02f2f; --urgent-soft:#fdeaea;
   --warn:#a86a00; --warn-soft:#fff4dc;
   --ok:#1f7a3a; --ok-soft:#e5f5ea;
@@ -28,7 +28,7 @@
     --accent:#7aa2ff; --accent-soft:#1f2b45;
     --t-chobing:#bd98f5; --t-chobing-soft:#2c2340;
     --t-ujeon:#5fd1b3; --t-ujeon-soft:#173229;
-    --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fcf9f; --t-gyoryu-soft:#1d3327;
+    --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fcf9f; --t-gyoryu-soft:#1d3327; --t-award:#d9a3ea; --t-award-soft:#33223a;
     --urgent:#ff7b7b; --urgent-soft:#3d1d1f;
     --warn:#f1c25b; --warn-soft:#382c12;
     --ok:#6fd38c; --ok-soft:#183223;
@@ -41,7 +41,7 @@
   --accent:#7aa2ff; --accent-soft:#1f2b45;
   --t-chobing:#bd98f5; --t-chobing-soft:#2c2340;
   --t-ujeon:#5fd1b3; --t-ujeon-soft:#173229;
-  --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fcf9f; --t-gyoryu-soft:#1d3327;
+  --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fcf9f; --t-gyoryu-soft:#1d3327; --t-award:#d9a3ea; --t-award-soft:#33223a;
   --urgent:#ff7b7b; --urgent-soft:#3d1d1f;
   --warn:#f1c25b; --warn-soft:#382c12;
   --ok:#6fd38c; --ok-soft:#183223;
@@ -100,6 +100,7 @@ h1{font-size:clamp(22px,4.6vw,30px);line-height:1.25;margin:6px 0 8px;letter-spa
 .type-우선전보{background:var(--t-ujeon-soft);color:var(--t-ujeon)}
 .type-공개모집{background:var(--t-gongmo-soft);color:var(--t-gongmo)}
 .type-국공립교류{background:var(--t-gyoryu-soft);color:var(--t-gyoryu)}
+.type-표창추천{background:var(--t-award-soft);color:var(--t-award)}
 .dd{font-variant-numeric:tabular-nums}
 .dd.urgent{background:var(--urgent-soft);color:var(--urgent)}
 .dd.soon{background:var(--warn-soft);color:var(--warn)}
@@ -198,7 +199,7 @@ footer p{margin:4px 0}
 <div class="wrap">
   <header>
     <div class="eyebrow">구월중학교 · 2027. 3. 1.자 인사</div>
-    <h1>초빙·우선전보 공모 현황</h1>
+    <h1>초빙·우선전보·표창 공모 현황</h1>
     <div class="updated">
       <span>업데이트 <b id="updated">-</b></span>
       <span id="srcnote">구월중학교 접수 공문 기준</span>
@@ -237,6 +238,7 @@ footer p{margin:4px 0}
       <div class="gcard"><h3><span class="badge type-우선전보">우선전보</span></h3><p>특수목적고 등에서 인사관리기준(중등) 제7조 ②항에 따라 우선 전보할 교사를 공모합니다. 정원 조정 결과에 따라 인원이 바뀌거나 전보가 이뤄지지 않을 수 있습니다.</p></div>
       <div class="gcard"><h3><span class="badge type-공개모집">공개모집</span></h3><p>영재학교처럼 전국 단위로 교사를 공개 모집합니다. 서류·면접 심사를 거치고, 임용 기간과 근무 조건이 따로 정해져 있습니다.</p></div>
       <div class="gcard"><h3><span class="badge type-국공립교류">국공립교류</span></h3><p>국립학교와 공립학교 사이에 같은 직위·같은 교과 교사를 맞바꾸는 인사교류입니다. 만기·구역 순위 기준이 있고, 학교가 시교육청에 공문으로 추천합니다.</p></div>
+      <div class="gcard"><h3><span class="badge type-표창추천">표창추천</span></h3><p>교육부장관·교육감 표창 대상자를 학교가 추천하는 공문입니다. 공적조서·동의서 등 서류가 많고 학교 공문으로 내야 하니, 추천받고 싶으면 마감보다 일찍 교무실에 알려 주세요.</p></div>
     </div>
     <div class="checklist">
       <h3>지원 전 확인할 것</h3>
@@ -250,7 +252,7 @@ footer p{margin:4px 0}
   </section>
 
   <footer>
-    <p>구월중학교에 접수된 초빙·우선전보·공개모집 공문을 요약한 페이지입니다. 공문이 새로 오면 계속 추가됩니다.</p>
+    <p>구월중학교에 접수된 초빙·우선전보·공개모집·국공립교류·표창추천 공문을 요약한 페이지입니다. 공문이 새로 오면 계속 추가됩니다.</p>
     <p>모집 인원은 시교육청의 학교별 배정 정원 조정에 따라 바뀔 수 있습니다. 서식(hwp·hwpx)은 공문 첨부파일을 그대로 올린 것입니다.</p>
   </footer>
 </div>
@@ -258,7 +260,7 @@ footer p{margin:4px 0}
 
 <script>
 (function(){
-  const TYPES = ["초빙","우선전보","공개모집","국공립교류"];
+  const TYPES = ["초빙","우선전보","공개모집","국공립교류","표창추천"];
   const DAY = 86400000;
   const state = { type:"전체", subj:"전체", q:"", view:"list" };
   let DATA = null;
@@ -346,6 +348,7 @@ footer p{margin:4px 0}
       const hit = state.subj!=="전체" && certs(p).includes(state.subj);
       return `<span class="${hit?"hit":""}">${esc(p.subject)}${p.subject!==p.cert?` <em>${esc(p.cert)}</em>`:""} ${p.count}명</span>`;
     }).join("") + `<span class="total">총 ${total(n)}명</span>`;
+    const posHtml = n.award ? `<span>${esc(n.award.grade)}</span><span class="total">${esc(n.award.count)}</span>` : pos;
     const li = arr => arr && arr.length ? `<ul>${arr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "";
     const sec = (h, body) => body ? `<div class="sec"><h3>${h}</h3>${body}</div>` : "";
     const sched = n.schedule && n.schedule.length ? `<ul class="sched">${n.schedule.map(s=>`<li><time>${fmtDate(s.date)}</time><span>${esc(s.label)}</span></li>`).join("")}</ul>` : "";
@@ -360,7 +363,7 @@ footer p{margin:4px 0}
       </div>
       <h2>${esc(n.school)}</h2>
       <p class="title">${esc(n.title)}</p>
-      <div class="pos">${pos}</div>
+      <div class="pos">${posHtml}</div>
       <dl class="facts">
         <dt>마감</dt><dd><b>${esc(n.deadlineText)}</b></dd>
         <dt>제출</dt><dd>${esc(n.submit)}</dd>
@@ -369,8 +372,8 @@ footer p{margin:4px 0}
       </dl>
       ${(n.tips||[]).map(t=>`<div class="tip"><b>미리 챙기기</b> ${esc(t)}</div>`).join("")}
       <details class="more">
-        <summary>지원 자격·유의사항·서식</summary>
-        ${sec("지원 자격", li(n.eligibility))}
+        <summary>${n.award ? "추천 대상·유의사항·서식" : "지원 자격·유의사항·서식"}</summary>
+        ${sec(n.award ? "추천 대상" : "지원 자격", li(n.eligibility))}
         ${sec("전형 일정", sched)}
         ${n.term?sec("임용 기간", `<ul><li>${esc(n.term)}</li></ul>`):""}
         ${sec("유의사항", li(n.notes))}
