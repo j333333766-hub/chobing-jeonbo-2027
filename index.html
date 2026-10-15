@@ -15,7 +15,7 @@
   --accent:#2357d6; --accent-soft:#e7eefc;
   --t-chobing:#7a3fd1; --t-chobing-soft:#f1eafc;
   --t-ujeon:#0f7a63; --t-ujeon-soft:#e2f4ef;
-  --t-gongmo:#b4570b; --t-gongmo-soft:#fdf0e3;
+  --t-gongmo:#b4570b; --t-gongmo-soft:#fdf0e3; --t-gyoryu:#2f6f4f; --t-gyoryu-soft:#e4f2ea;
   --urgent:#d02f2f; --urgent-soft:#fdeaea;
   --warn:#a86a00; --warn-soft:#fff4dc;
   --ok:#1f7a3a; --ok-soft:#e5f5ea;
@@ -28,7 +28,7 @@
     --accent:#7aa2ff; --accent-soft:#1f2b45;
     --t-chobing:#bd98f5; --t-chobing-soft:#2c2340;
     --t-ujeon:#5fd1b3; --t-ujeon-soft:#173229;
-    --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816;
+    --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fcf9f; --t-gyoryu-soft:#1d3327;
     --urgent:#ff7b7b; --urgent-soft:#3d1d1f;
     --warn:#f1c25b; --warn-soft:#382c12;
     --ok:#6fd38c; --ok-soft:#183223;
@@ -41,7 +41,7 @@
   --accent:#7aa2ff; --accent-soft:#1f2b45;
   --t-chobing:#bd98f5; --t-chobing-soft:#2c2340;
   --t-ujeon:#5fd1b3; --t-ujeon-soft:#173229;
-  --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816;
+  --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fcf9f; --t-gyoryu-soft:#1d3327;
   --urgent:#ff7b7b; --urgent-soft:#3d1d1f;
   --warn:#f1c25b; --warn-soft:#382c12;
   --ok:#6fd38c; --ok-soft:#183223;
@@ -99,6 +99,7 @@ h1{font-size:clamp(22px,4.6vw,30px);line-height:1.25;margin:6px 0 8px;letter-spa
 .type-초빙{background:var(--t-chobing-soft);color:var(--t-chobing)}
 .type-우선전보{background:var(--t-ujeon-soft);color:var(--t-ujeon)}
 .type-공개모집{background:var(--t-gongmo-soft);color:var(--t-gongmo)}
+.type-국공립교류{background:var(--t-gyoryu-soft);color:var(--t-gyoryu)}
 .dd{font-variant-numeric:tabular-nums}
 .dd.urgent{background:var(--urgent-soft);color:var(--urgent)}
 .dd.soon{background:var(--warn-soft);color:var(--warn)}
@@ -168,7 +169,7 @@ table.matrix{width:100%;border-collapse:collapse;background:var(--surface);borde
 
 .guide{margin:30px 0 10px}
 .guide h2{font-size:18px;margin:0 0 10px}
-.gcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gcards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media (max-width:720px){.gcards{grid-template-columns:1fr}}
 .gcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:14px}
 .gcard h3{margin:0 0 6px;font-size:15px}
@@ -235,6 +236,7 @@ footer p{margin:4px 0}
       <div class="gcard"><h3><span class="badge type-초빙">초빙</span></h3><p>학교장이 필요한 교사를 직접 공모해 초빙합니다. 학교마다 지원 자격·제출 서류·심사 방식이 달라서 공고문을 꼭 확인해야 합니다.</p></div>
       <div class="gcard"><h3><span class="badge type-우선전보">우선전보</span></h3><p>특수목적고 등에서 인사관리기준(중등) 제7조 ②항에 따라 우선 전보할 교사를 공모합니다. 정원 조정 결과에 따라 인원이 바뀌거나 전보가 이뤄지지 않을 수 있습니다.</p></div>
       <div class="gcard"><h3><span class="badge type-공개모집">공개모집</span></h3><p>영재학교처럼 전국 단위로 교사를 공개 모집합니다. 서류·면접 심사를 거치고, 임용 기간과 근무 조건이 따로 정해져 있습니다.</p></div>
+      <div class="gcard"><h3><span class="badge type-국공립교류">국공립교류</span></h3><p>국립학교와 공립학교 사이에 같은 직위·같은 교과 교사를 맞바꾸는 인사교류입니다. 만기·구역 순위 기준이 있고, 학교가 시교육청에 공문으로 추천합니다.</p></div>
     </div>
     <div class="checklist">
       <h3>지원 전 확인할 것</h3>
@@ -256,7 +258,7 @@ footer p{margin:4px 0}
 
 <script>
 (function(){
-  const TYPES = ["초빙","우선전보","공개모집"];
+  const TYPES = ["초빙","우선전보","공개모집","국공립교류"];
   const DAY = 86400000;
   const state = { type:"전체", subj:"전체", q:"", view:"list" };
   let DATA = null;
