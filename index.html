@@ -15,7 +15,7 @@
   --accent:#2357d6; --accent-soft:#e7eefc;
   --t-chobing:#7a3fd1; --t-chobing-soft:#f1eafc;
   --t-ujeon:#0f7a63; --t-ujeon-soft:#e2f4ef;
-  --t-gongmo:#b4570b; --t-gongmo-soft:#fdf0e3; --t-gyoryu:#2f6f4f; --t-gyoryu-soft:#e4f2ea; --t-award:#8a3fa0; --t-award-soft:#f4e8f8;
+  --t-gongmo:#b4570b; --t-gongmo-soft:#fdf0e3; --t-gyoryu:#1d5fb8; --t-gyoryu-soft:#e5effc; --t-award:#c0265e; --t-award-soft:#fde8ef;
   --urgent:#d02f2f; --urgent-soft:#fdeaea;
   --warn:#a86a00; --warn-soft:#fff4dc;
   --ok:#1f7a3a; --ok-soft:#e5f5ea;
@@ -28,7 +28,7 @@
     --accent:#7aa2ff; --accent-soft:#1f2b45;
     --t-chobing:#bd98f5; --t-chobing-soft:#2c2340;
     --t-ujeon:#5fd1b3; --t-ujeon-soft:#173229;
-    --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fcf9f; --t-gyoryu-soft:#1d3327; --t-award:#d9a3ea; --t-award-soft:#33223a;
+    --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fb0f2; --t-gyoryu-soft:#18263b; --t-award:#f28aae; --t-award-soft:#3a1c27;
     --urgent:#ff7b7b; --urgent-soft:#3d1d1f;
     --warn:#f1c25b; --warn-soft:#382c12;
     --ok:#6fd38c; --ok-soft:#183223;
@@ -41,7 +41,7 @@
   --accent:#7aa2ff; --accent-soft:#1f2b45;
   --t-chobing:#bd98f5; --t-chobing-soft:#2c2340;
   --t-ujeon:#5fd1b3; --t-ujeon-soft:#173229;
-  --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fcf9f; --t-gyoryu-soft:#1d3327; --t-award:#d9a3ea; --t-award-soft:#33223a;
+  --t-gongmo:#f2a65a; --t-gongmo-soft:#3a2816; --t-gyoryu:#7fb0f2; --t-gyoryu-soft:#18263b; --t-award:#f28aae; --t-award-soft:#3a1c27;
   --urgent:#ff7b7b; --urgent-soft:#3d1d1f;
   --warn:#f1c25b; --warn-soft:#382c12;
   --ok:#6fd38c; --ok-soft:#183223;
@@ -74,6 +74,13 @@ h1{font-size:clamp(22px,4.6vw,30px);line-height:1.25;margin:6px 0 8px;letter-spa
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .row + .row{margin-top:8px}
 .seg{display:inline-flex;background:var(--surface2);border-radius:10px;padding:3px}
+.typebar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:10px}
+@media (max-width:720px){.typebar{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.typebar button{--c:var(--text);--cs:var(--surface2);min-height:66px;border-radius:16px;border:2px solid var(--c);background:var(--cs);color:var(--c);font:inherit;font-size:19px;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 4px;line-height:1.2;transition:transform .1s}
+.typebar button small{font-size:13px;font-weight:600;opacity:.85}
+.typebar button:hover{transform:translateY(-1px)}
+.typebar button[aria-pressed="true"]{background:var(--c);color:var(--bg);box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.typebar button:focus-visible{outline:3px solid var(--c);outline-offset:2px}
 .seg button{border:0;background:transparent;padding:6px 12px;border-radius:8px;font-size:14px;cursor:pointer;color:var(--sub);font-weight:600}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .search{flex:1;min-width:160px;position:relative}
@@ -210,8 +217,8 @@ footer p{margin:4px 0}
   <section class="stats" id="stats" aria-label="요약"></section>
 
   <div class="toolbar">
+    <div class="typebar" id="typeSeg" role="group" aria-label="구분"></div>
     <div class="row">
-      <div class="seg" id="typeSeg" role="group" aria-label="구분"></div>
       <label class="search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input id="q" type="search" placeholder="학교, 교과, 자격 검색" autocomplete="off">
@@ -260,7 +267,7 @@ footer p{margin:4px 0}
 
 <script>
 (function(){
-  const TYPES = ["초빙","우선전보","공개모집","국공립교류","표창추천"];
+  const TYPES = ["표창추천","초빙","우선전보","공개모집","국공립교류"];
   const DAY = 86400000;
   const state = { type:"전체", subj:"전체", q:"", view:"list" };
   let DATA = null;
@@ -326,8 +333,13 @@ footer p{margin:4px 0}
 
   function renderTypeSeg(){
     const el = document.getElementById("typeSeg");
-    const present = TYPES.filter(t => DATA.notices.some(n=>n.type===t));
-    el.innerHTML = ["전체",...present].map(t=>`<button type="button" data-t="${t}" aria-pressed="${state.type===t}">${t}</button>`).join("");
+    const present = TYPES; // 공고가 없는 유형도 버튼은 늘 보인다(순서 고정)
+    const VAR = {"표창추천":"award","초빙":"chobing","우선전보":"ujeon","공개모집":"gongmo","국공립교류":"gyoryu"};
+    const openN = t => DATA.notices.filter(n => !status(n).closed && (t==="전체" || n.type===t)).length;
+    el.innerHTML = ["전체",...present].map(t => {
+      const style = VAR[t] ? ` style="--c:var(--t-${VAR[t]});--cs:var(--t-${VAR[t]}-soft)"` : "";
+      return `<button type="button" data-t="${t}" aria-pressed="${state.type===t}"${style}>${t}<small>접수 중 ${openN(t)}건</small></button>`;
+    }).join("");
   }
   function renderChips(){
     const count = {};
