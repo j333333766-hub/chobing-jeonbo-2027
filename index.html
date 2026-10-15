@@ -62,13 +62,17 @@ h1{font-size:clamp(22px,4.6vw,30px);line-height:1.25;margin:6px 0 8px;letter-spa
 .share{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer}
 .share:hover{border-color:var(--accent);color:var(--accent)}
 
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0 18px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 6px}
+.stat{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .12s,transform .1s}
+.stat:hover{border-color:var(--accent);transform:translateY(-1px)}
+.stat[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft, var(--surface2))}
+.stat:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.statnote{margin:0 0 16px;font-size:12.5px;color:var(--sub)}
 .stat .k{font-size:12.5px;color:var(--sub)}
 .stat .v{font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .stat .v small{font-size:13px;font-weight:600;color:var(--sub);margin-left:2px}
 .stat.hot .v{color:var(--urgent)}
-@media (max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.stats{grid-template-columns:repeat(3,1fr)}.stat{padding:10px}.stat .v{font-size:20px}}
 
 .toolbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 10px;border-bottom:1px solid var(--line);margin-bottom:16px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -216,7 +220,8 @@ footer p{margin:4px 0}
     </div>
   </header>
 
-  <section class="stats" id="stats" aria-label="요약"></section>
+  <section class="stats" id="stats" role="group" aria-label="마감 상태로 보기"></section>
+  <p class="statnote" id="statnote"></p>
 
   <div class="toolbar">
     <div class="typebar" id="typeSeg" role="group" aria-label="구분"></div>
@@ -271,7 +276,7 @@ footer p{margin:4px 0}
 (function(){
   const TYPES = ["표창추천","초빙","우선전보","공개모집","국공립교류"];
   const DAY = 86400000;
-  const state = { type:"전체", subj:"전체", q:"", view:"list" };
+  const state = { type:"전체", subj:"전체", q:"", view:"list", st:"" }; // st: ""(전체) | open | week | closed
   let DATA = null;
 
   // ---- 시간 계산 (한국 시간 기준) ----
@@ -309,7 +314,15 @@ footer p{margin:4px 0}
   const posLabel = p => p.subject === p.cert ? p.subject : p.subject+"("+p.cert+")";
   const total = n => n.positions.reduce((a,p)=>a+(+p.count||0),0);
 
-  function matches(n){
+  function stOk(n){
+    const s = status(n);
+    if (state.st==="open") return !s.closed;
+    if (state.st==="week") return !s.closed && dayDiff(n.deadline) <= 7;
+    if (state.st==="closed") return s.closed;
+    return true;
+  }
+  function matches(n, ignoreSt){
+    if (!ignoreSt && !stOk(n)) return false;
     if (state.type !== "전체" && n.type !== state.type) return false;
     if (state.subj !== "전체" && !n.positions.some(p => certs(p).includes(state.subj))) return false;
     if (state.q){
@@ -321,17 +334,19 @@ footer p{margin:4px 0}
 
   // ---- 상단 ----
   function renderStats(){
-    const open = DATA.notices.filter(n => !status(n).closed);
+    const base = DATA.notices.filter(n => matches(n, true));
+    const open = base.filter(n => !status(n).closed);
     const people = open.reduce((a,n)=>a+total(n),0);
     const week = open.filter(n => dayDiff(n.deadline) <= 7).length;
-    const closed = DATA.notices.length - open.length;
+    const closed = base.length - open.length;
     document.getElementById("stats").innerHTML =
-      stat("접수 중인 공고", open.length, "건") +
-      stat("모집 인원", people, "명") +
-      stat("7일 안에 마감", week, "건", week>0) +
-      stat("마감된 공고", closed, "건");
+      stat("open", "접수 중인 공고", open.length, "건") +
+      stat("week", "7일 안에 마감", week, "건", week>0) +
+      stat("closed", "마감된 공고", closed, "건");
+    document.getElementById("statnote").textContent =
+      (people ? `접수 중 공고의 모집 인원 ${people}명 · ` : "") + (state.st ? "같은 버튼을 다시 누르면 전체 공고를 봅니다." : "숫자를 누르면 그 공고만 골라 봅니다.");
   }
-  const stat = (k,v,u,hot) => `<div class="stat${hot?" hot":""}"><div class="k">${k}</div><div class="v">${v}<small>${u}</small></div></div>`;
+  const stat = (st,k,v,u,hot) => `<button type="button" class="stat${hot?" hot":""}" data-st="${st}" aria-pressed="${state.st===st}"><div class="k">${k}</div><div class="v">${v}<small>${u}</small></div></button>`;
 
   function renderTypeSeg(){
     const el = document.getElementById("typeSeg");
@@ -401,7 +416,8 @@ footer p{margin:4px 0}
     let h = open.length ? open.map(card).join("") : `<div class="empty">조건에 맞는 접수 중인 공고가 없습니다.</div>`;
     // 표창추천을 고르면 맨 위에 추천 방법 안내를 크게 보여 준다
     if (state.type==="표창추천") h = `<div class="awardnote"><b>표창 추천 안내</b> 추천하실 분(또는 추천하고 싶은 분이 있으면)은 <b>김은주 선생님께 아이스톡 쪽지</b>를 보내 주세요. 학교에서 공문으로 추천하므로 마감 1주일 전까지 알려 주시면 서류 준비에 여유가 있어요.</div>` + h;
-    if (closed.length) h += `<details class="closed-wrap"><summary>마감된 공고 ${closed.length}건 보기</summary>${closed.map(card).join("")}</details>`;
+    if (state.st==="closed") h = h.replace(/^<div class="empty">[^<]*<\/div>/, "") + (closed.length ? closed.map(card).join("") : `<div class="empty">조건에 맞는 마감된 공고가 없습니다.</div>`);
+    else if (closed.length && !state.st) h += `<details class="closed-wrap"><summary>마감된 공고 ${closed.length}건 보기</summary>${closed.map(card).join("")}</details>`;
     return h;
   }
 
@@ -456,7 +472,7 @@ footer p{margin:4px 0}
 
   function render(){
     renderStats(); renderTypeSeg(); renderChips();
-    const list = DATA.notices.filter(matches);
+    const list = DATA.notices.filter(n => matches(n));
     const v = document.getElementById("view");
     v.innerHTML = state.view==="subject" ? renderSubject(list) : state.view==="cal" ? renderCal(list) : renderList(list);
     document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.view===state.view));
@@ -471,6 +487,7 @@ footer p{margin:4px 0}
     if (state.subj!=="전체") p.set("s",state.subj);
     if (state.type!=="전체") p.set("t",state.type);
     if (state.view!=="list") p.set("v",state.view);
+    if (state.st) p.set("f",state.st);
     const qs = p.toString();
     history.replaceState(null,"",location.pathname+(qs?"?"+qs:"")+location.hash);
   }
@@ -478,6 +495,7 @@ footer p{margin:4px 0}
     const p = new URLSearchParams(location.search);
     state.subj = p.get("s")||"전체"; state.type = p.get("t")||"전체";
     state.view = ["list","subject","cal"].includes(p.get("v")) ? p.get("v") : "list";
+    state.st = ["open","week","closed"].includes(p.get("f")) ? p.get("f") : "";
   }
 
   function jumpTo(id){
@@ -493,6 +511,7 @@ footer p{margin:4px 0}
 
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-t]"); if (t){ state.type=t.dataset.t; render(); return; }
+    const f = e.target.closest("[data-st]"); if (f){ state.st = state.st===f.dataset.st ? "" : f.dataset.st; render(); return; }
     const s = e.target.closest("[data-s]"); if (s){ state.subj=s.dataset.s; render(); return; }
     const v = e.target.closest("[data-view]"); if (v){ state.view=v.dataset.view; render(); return; }
     const j = e.target.closest("[data-jump]"); if (j){ e.preventDefault(); jumpTo(j.dataset.jump); return; }
