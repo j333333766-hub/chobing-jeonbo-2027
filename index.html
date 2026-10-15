@@ -128,6 +128,8 @@ h1{font-size:clamp(22px,4.6vw,30px);line-height:1.25;margin:6px 0 8px;letter-spa
 .facts dd{margin:0}
 .tip{margin-top:10px;font-size:13.5px;background:var(--warn-soft);color:var(--text);border-radius:10px;padding:8px 11px}
 .tip b{color:var(--warn)}
+.awardnote{margin:0 0 14px;padding:14px 16px;border-radius:14px;border:2px solid var(--t-award);background:var(--t-award-soft);color:var(--text);font-size:15px;line-height:1.6}
+.awardnote b:first-child{display:block;color:var(--t-award);font-size:16px;margin-bottom:2px}
 details.more{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
 details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);list-style:none}
 details.more summary::-webkit-details-marker{display:none}
@@ -245,7 +247,7 @@ footer p{margin:4px 0}
       <div class="gcard"><h3><span class="badge type-우선전보">우선전보</span></h3><p>특수목적고 등에서 인사관리기준(중등) 제7조 ②항에 따라 우선 전보할 교사를 공모합니다. 정원 조정 결과에 따라 인원이 바뀌거나 전보가 이뤄지지 않을 수 있습니다.</p></div>
       <div class="gcard"><h3><span class="badge type-공개모집">공개모집</span></h3><p>영재학교처럼 전국 단위로 교사를 공개 모집합니다. 서류·면접 심사를 거치고, 임용 기간과 근무 조건이 따로 정해져 있습니다.</p></div>
       <div class="gcard"><h3><span class="badge type-국공립교류">국공립교류</span></h3><p>국립학교와 공립학교 사이에 같은 직위·같은 교과 교사를 맞바꾸는 인사교류입니다. 만기·구역 순위 기준이 있고, 학교가 시교육청에 공문으로 추천합니다.</p></div>
-      <div class="gcard"><h3><span class="badge type-표창추천">표창추천</span></h3><p>교육부장관·교육감 표창 대상자를 학교가 추천하는 공문입니다. 공적조서·동의서 등 서류가 많고 학교 공문으로 내야 하니, 추천받고 싶으면 마감보다 일찍 교무실에 알려 주세요.</p></div>
+      <div class="gcard"><h3><span class="badge type-표창추천">표창추천</span></h3><p>교육부장관·교육감 표창 대상자를 학교가 추천하는 공문입니다. 공적조서·동의서 등 서류가 많고 학교 공문으로 내야 해요. <b>추천하실 분은 김은주 선생님께 아이스톡 쪽지</b>를 마감보다 일찍 보내 주세요.</p></div>
     </div>
     <div class="checklist">
       <h3>지원 전 확인할 것</h3>
@@ -397,6 +399,8 @@ footer p{margin:4px 0}
     const open = list.filter(n=>!status(n).closed).sort((a,b)=>Date.parse(a.deadline)-Date.parse(b.deadline));
     const closed = list.filter(n=>status(n).closed).sort((a,b)=>Date.parse(b.deadline)-Date.parse(a.deadline));
     let h = open.length ? open.map(card).join("") : `<div class="empty">조건에 맞는 접수 중인 공고가 없습니다.</div>`;
+    // 표창추천을 고르면 맨 위에 추천 방법 안내를 크게 보여 준다
+    if (state.type==="표창추천") h = `<div class="awardnote"><b>표창 추천 안내</b> 추천하실 분(또는 추천하고 싶은 분이 있으면)은 <b>김은주 선생님께 아이스톡 쪽지</b>를 보내 주세요. 학교에서 공문으로 추천하므로 마감 1주일 전까지 알려 주시면 서류 준비에 여유가 있어요.</div>` + h;
     if (closed.length) h += `<details class="closed-wrap"><summary>마감된 공고 ${closed.length}건 보기</summary>${closed.map(card).join("")}</details>`;
     return h;
   }
