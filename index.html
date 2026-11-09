@@ -380,7 +380,7 @@ footer p{margin:4px 0}
     const posHtml = n.award ? `<span>${esc(n.award.grade)}</span><span class="total">${esc(n.award.count)}</span>` : pos;
     const li = arr => arr && arr.length ? `<ul>${arr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "";
     const sec = (h, body) => body ? `<div class="sec"><h3>${h}</h3>${body}</div>` : "";
-    const sched = n.schedule && n.schedule.length ? `<ul class="sched">${n.schedule.map(s=>`<li><time>${fmtDate(s.date)}</time><span>${esc(s.label)}</span></li>`).join("")}</ul>` : "";
+    const sched = Array.isArray(n.schedule) && n.schedule.length ? `<ul class="sched">${n.schedule.map(s=>`<li><time>${fmtDate(s.date)}</time><span>${esc(s.label)}</span></li>`).join("")}</ul>` : "";
     const files = n.files && n.files.length ? `<div class="files">${n.files.map(f=>`<a href="${esc(f.href)}" download="${esc(n.school+" "+f.name)}">⬇ ${esc(f.name)}</a>`).join("")}</div>` : "";
     const home = n.homepage ? `<a href="${esc(n.homepage)}" target="_blank" rel="noopener">학교 홈페이지</a>` : "";
     return `<article class="card${st.closed?" closed":""}" id="n-${esc(n.id)}">
