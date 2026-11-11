@@ -179,6 +179,17 @@ table.matrix{width:100%;border-collapse:collapse;background:var(--surface);borde
 .timeline .ev .kind.dl{color:var(--urgent)}
 .timeline .ev .kind.ot{color:var(--sub)}
 
+.golinks{margin:0 0 14px;padding:14px 16px;border-radius:14px;border:2px solid var(--t-chobing);background:var(--t-chobing-soft);font-size:14.5px;line-height:1.6}
+.golinks > b{display:block;color:var(--t-chobing);font-size:16px;margin-bottom:2px}
+.golinks p{margin:0 0 10px;color:var(--text)}
+.golinks .btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:620px){.golinks .btns{grid-template-columns:repeat(2,1fr)}}
+.golinks a{display:flex;flex-direction:column;justify-content:center;min-height:56px;text-decoration:none;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:700;font-size:14.5px}
+.golinks a small{font-weight:500;color:var(--sub);font-size:12px}
+.golinks a:hover{border-color:var(--t-chobing)}
+.golinks .lvsum{margin-top:10px;font-size:13px;color:var(--sub)}
+.badge.where{background:var(--surface2);color:var(--sub)}
+#lvRow[hidden]{display:none}
 .empty{text-align:center;color:var(--sub);padding:40px 10px;background:var(--surface);border:1px dashed var(--line);border-radius:16px}
 
 .guide{margin:30px 0 10px}
@@ -231,6 +242,10 @@ footer p{margin:4px 0}
         <input id="q" type="search" placeholder="학교, 교과, 자격 검색" autocomplete="off">
       </label>
     </div>
+    <div class="row" id="lvRow" hidden>
+      <span class="label">학교급</span>
+      <div class="chips" id="lvChips" role="group" aria-label="학교급"></div>
+    </div>
     <div class="row">
       <span class="label">교과</span>
       <div class="chips" id="subjChips" role="group" aria-label="교과"></div>
@@ -248,7 +263,7 @@ footer p{margin:4px 0}
   <section class="guide" aria-labelledby="gtitle">
     <h2 id="gtitle">알아 두면 좋은 것</h2>
     <div class="gcards">
-      <div class="gcard"><h3><span class="badge type-초빙">초빙</span></h3><p>학교장이 필요한 교사를 직접 공모해 초빙합니다. 학교마다 지원 자격·제출 서류·심사 방식이 달라서 공고문을 꼭 확인해야 합니다.</p></div>
+      <div class="gcard"><h3><span class="badge type-초빙">초빙</span></h3><p>학교장이 필요한 교사를 직접 공모해 초빙합니다. 학교마다 지원 자격·제출 서류·심사 방식이 달라서 공고문을 꼭 확인해야 합니다. 중학교 공고는 관할 교육지원청, 고등·특수학교 공고는 시교육청 홈페이지에 모아 올라옵니다(위 [초빙] 버튼을 누르면 바로가기가 나와요). 대부분 <b>직접 방문 접수</b>입니다.</p></div>
       <div class="gcard"><h3><span class="badge type-우선전보">우선전보</span></h3><p>특수목적고 등에서 인사관리기준(중등) 제7조 ②항에 따라 우선 전보할 교사를 공모합니다. 정원 조정 결과에 따라 인원이 바뀌거나 전보가 이뤄지지 않을 수 있습니다.</p></div>
       <div class="gcard"><h3><span class="badge type-공개모집">공개모집</span></h3><p>영재학교처럼 전국 단위로 교사를 공개 모집합니다. 서류·면접 심사를 거치고, 임용 기간과 근무 조건이 따로 정해져 있습니다.</p></div>
       <div class="gcard"><h3><span class="badge type-국공립교류">국공립교류</span></h3><p>국립학교와 공립학교 사이에 같은 직위·같은 교과 교사를 맞바꾸는 인사교류입니다. 만기·구역 순위 기준이 있고, 학교가 시교육청에 공문으로 추천합니다.</p></div>
@@ -276,7 +291,8 @@ footer p{margin:4px 0}
 (function(){
   const TYPES = ["표창추천","초빙","우선전보","공개모집","국공립교류"];
   const DAY = 86400000;
-  const state = { type:"전체", subj:"전체", q:"", view:"list", st:"" }; // st: ""(전체) | open | week | closed
+  const state = { type:"전체", subj:"전체", q:"", view:"list", st:"", lv:"전체" }; // st: ""(전체) | open | week | closed, lv: 초빙 학교급
+  const LEVELS = ["중학교","고등학교","특수·각종"];
   let DATA = null;
 
   // ---- 시간 계산 (한국 시간 기준) ----
@@ -324,9 +340,10 @@ footer p{margin:4px 0}
   function matches(n, ignoreSt){
     if (!ignoreSt && !stOk(n)) return false;
     if (state.type !== "전체" && n.type !== state.type) return false;
+    if (state.type === "초빙" && state.lv !== "전체" && n.level !== state.lv) return false;
     if (state.subj !== "전체" && !n.positions.some(p => certs(p).includes(state.subj))) return false;
     if (state.q){
-      const hay = [n.school,n.type,n.title,...n.positions.map(p=>p.subject+" "+p.cert),...(n.eligibility||[])].join(" ").toLowerCase();
+      const hay = [n.school,n.type,n.title,n.region||"",n.level||"",...n.positions.map(p=>p.subject+" "+p.cert),...(n.eligibility||[])].join(" ").toLowerCase();
       if (!state.q.toLowerCase().split(/\s+/).every(w => hay.includes(w))) return false;
     }
     return true;
@@ -358,9 +375,17 @@ footer p{margin:4px 0}
       return `<button type="button" data-t="${t}" aria-pressed="${state.type===t}"${style}>${t}<small>접수 중 ${openN(t)}건</small></button>`;
     }).join("");
   }
+  function renderLevels(){
+    const row = document.getElementById("lvRow");
+    row.hidden = state.type !== "초빙";
+    if (row.hidden) return;
+    const cnt = lv => DATA.notices.filter(n => n.type==="초빙" && !status(n).closed && (lv==="전체" || n.level===lv)).length;
+    document.getElementById("lvChips").innerHTML = ["전체",...LEVELS].map(l =>
+      `<button type="button" class="chip" data-lv="${l}" aria-pressed="${state.lv===l}">${l}<span class="n">${cnt(l)}</span></button>`).join("");
+  }
   function renderChips(){
     const count = {};
-    DATA.notices.filter(n => !status(n).closed && (state.type==="전체"||n.type===state.type))
+    DATA.notices.filter(n => !status(n).closed && (state.type==="전체"||n.type===state.type) && (state.type!=="초빙"||state.lv==="전체"||n.level===state.lv))
       .forEach(n => n.positions.forEach(p => certs(p).forEach(c => count[c]=(count[c]||0)+(+p.count||0))));
     // 마감된 공고에만 있는 교과도 선택은 가능하게 0으로 둔다
     DATA.notices.forEach(n => n.positions.forEach(p => certs(p).forEach(c => { if(!(c in count)) count[c]=0; })));
@@ -387,6 +412,7 @@ footer p{margin:4px 0}
       <div class="card-top">
         <span class="badge type-${esc(n.type)}">${esc(n.type)}</span>
         <span class="badge dd ${st.cls}">${st.text}</span>
+        ${n.region||n.level?`<span class="badge where">${esc([n.region,n.level].filter(Boolean).join(" · "))}</span>`:""}
         ${isNew(n)?`<span class="badge new">새 공문</span>`:""}
         <span class="recv">${fmtDate(n.received,false)} 접수 · ${esc(n.receivedNo)}</span>
       </div>
@@ -415,10 +441,22 @@ footer p{margin:4px 0}
     const closed = list.filter(n=>status(n).closed).sort((a,b)=>Date.parse(b.deadline)-Date.parse(a.deadline));
     let h = open.length ? open.map(card).join("") : `<div class="empty">조건에 맞는 접수 중인 공고가 없습니다.</div>`;
     // 표창추천을 고르면 맨 위에 추천 방법 안내를 크게 보여 준다
+    if (state.type==="초빙" && DATA.chobingLinks) h = goLinks() + h;
     if (state.type==="표창추천") h = `<div class="awardnote"><b>표창 추천 안내</b> 추천하실 분(또는 추천하고 싶은 분이 있으면)은 <b>김은주 선생님께 아이스톡 쪽지</b>를 보내 주세요. 학교에서 공문으로 추천하므로 마감 1주일 전까지 알려 주시면 서류 준비에 여유가 있어요.</div>` + h;
     if (state.st==="closed") h = h.replace(/^<div class="empty">[^<]*<\/div>/, "") + (closed.length ? closed.map(card).join("") : `<div class="empty">조건에 맞는 마감된 공고가 없습니다.</div>`);
     else if (closed.length && !state.st) h += `<details class="closed-wrap"><summary>마감된 공고 ${closed.length}건 보기</summary>${closed.map(card).join("")}</details>`;
     return h;
+  }
+
+  // 초빙: 교육청별 원문 게시판 바로가기 + 학교급별 요약
+  function goLinks(){
+    const c = DATA.chobingLinks;
+    const open = DATA.notices.filter(n => n.type==="초빙" && !status(n).closed);
+    const sum = LEVELS.map(l => { const a = open.filter(n=>n.level===l); return a.length ? `${l} ${a.length}교 ${a.reduce((s,n)=>s+total(n),0)}명` : ""; }).filter(Boolean).join(" · ");
+    return `<div class="golinks"><b>교육청별 초빙 공고 바로가기</b>
+      <p>${esc(c.note||"")}</p>
+      <div class="btns">${c.links.map(l=>`<a href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)}<small>${esc(l.sub||"")}</small></a>`).join("")}</div>
+      ${sum?`<div class="lvsum">접수 중: ${esc(sum)}</div>`:""}</div>`;
   }
 
   // ---- 교과별 ----
@@ -471,7 +509,7 @@ footer p{margin:4px 0}
   }
 
   function render(){
-    renderStats(); renderTypeSeg(); renderChips();
+    renderStats(); renderTypeSeg(); renderLevels(); renderChips();
     const list = DATA.notices.filter(n => matches(n));
     const v = document.getElementById("view");
     v.innerHTML = state.view==="subject" ? renderSubject(list) : state.view==="cal" ? renderCal(list) : renderList(list);
@@ -488,6 +526,7 @@ footer p{margin:4px 0}
     if (state.type!=="전체") p.set("t",state.type);
     if (state.view!=="list") p.set("v",state.view);
     if (state.st) p.set("f",state.st);
+    if (state.type==="초빙" && state.lv!=="전체") p.set("l",state.lv);
     const qs = p.toString();
     history.replaceState(null,"",location.pathname+(qs?"?"+qs:"")+location.hash);
   }
@@ -496,6 +535,7 @@ footer p{margin:4px 0}
     state.subj = p.get("s")||"전체"; state.type = p.get("t")||"전체";
     state.view = ["list","subject","cal"].includes(p.get("v")) ? p.get("v") : "list";
     state.st = ["open","week","closed"].includes(p.get("f")) ? p.get("f") : "";
+    state.lv = LEVELS.includes(p.get("l")) ? p.get("l") : "전체";
   }
 
   function jumpTo(id){
@@ -511,6 +551,7 @@ footer p{margin:4px 0}
 
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-t]"); if (t){ state.type=t.dataset.t; render(); return; }
+    const lv = e.target.closest("[data-lv]"); if (lv){ state.lv=lv.dataset.lv; render(); return; }
     const f = e.target.closest("[data-st]"); if (f){ state.st = state.st===f.dataset.st ? "" : f.dataset.st; render(); return; }
     const s = e.target.closest("[data-s]"); if (s){ state.subj=s.dataset.s; render(); return; }
     const v = e.target.closest("[data-view]"); if (v){ state.view=v.dataset.view; render(); return; }
